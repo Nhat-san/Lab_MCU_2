@@ -218,10 +218,10 @@ int main(void)
 	//int number = 1;
 	int en = 3;
 	int cntdot = 2;
-	setTimer1(5);
+	setTimer1(25);
 	while (1) {
 		if (timer1_flag) {
-			setTimer1(5);
+			setTimer1(25);
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 			if(cntdot <= 0){
 				HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);

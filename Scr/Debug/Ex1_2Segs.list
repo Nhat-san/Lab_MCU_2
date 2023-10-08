@@ -701,8 +701,8 @@ int main(void)
 	int cntdot = 2;
  80005a4:	2302      	movs	r3, #2
  80005a6:	603b      	str	r3, [r7, #0]
-	setTimer1(5);
- 80005a8:	2005      	movs	r0, #5
+	setTimer1(25);
+ 80005a8:	2019      	movs	r0, #25
  80005aa:	f000 f915 	bl	80007d8 <setTimer1>
 	while (1) {
 		if (timer1_flag) {
@@ -710,8 +710,8 @@ int main(void)
  80005b0:	681b      	ldr	r3, [r3, #0]
  80005b2:	2b00      	cmp	r3, #0
  80005b4:	d0fb      	beq.n	80005ae <main+0x2a>
-			setTimer1(5);
- 80005b6:	2005      	movs	r0, #5
+			setTimer1(25);
+ 80005b6:	2019      	movs	r0, #25
  80005b8:	f000 f90e 	bl	80007d8 <setTimer1>
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
  80005bc:	2120      	movs	r1, #32

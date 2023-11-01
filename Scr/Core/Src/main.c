@@ -32,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define time 50
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -178,10 +179,10 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	//int number = 1;
 	int en = 0;
-	setTimer1(5);
+	setTimer1(time);
 	while (1) {
 		if (timer1_flag) {
-			setTimer1(5);
+			setTimer1(time);
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 
 			if (en == 0) {

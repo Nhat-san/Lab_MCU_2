@@ -1,5 +1,5 @@
 
-Ex1_2Segs.elf:     file format elf32-littlearm
+Ex3.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -35,15 +35,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_ranges 000008b0  00000000  00000000  0002a560  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000162a6  00000000  00000000  0002ae10  2**0
+ 16 .debug_macro  000162ac  00000000  00000000  0002ae10  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000095fe  00000000  00000000  000410b6  2**0
+ 17 .debug_line   000095fe  00000000  00000000  000410bc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00081f4e  00000000  00000000  0004a6b4  2**0
+ 18 .debug_str    00081f22  00000000  00000000  0004a6ba  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000cc602  2**0
+ 19 .comment      00000053  00000000  00000000  000cc5dc  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002670  00000000  00000000  000cc658  2**2
+ 20 .debug_frame  00002670  00000000  00000000  000cc630  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -701,8 +701,8 @@ int main(void)
 	int cntdot = 2;
  80005a4:	2302      	movs	r3, #2
  80005a6:	603b      	str	r3, [r7, #0]
-	setTimer1(5);
- 80005a8:	2005      	movs	r0, #5
+	setTimer1(time);
+ 80005a8:	2032      	movs	r0, #50	; 0x32
  80005aa:	f000 f915 	bl	80007d8 <setTimer1>
 	while (1) {
 		if (timer1_flag) {
@@ -710,8 +710,8 @@ int main(void)
  80005b0:	681b      	ldr	r3, [r3, #0]
  80005b2:	2b00      	cmp	r3, #0
  80005b4:	d0fb      	beq.n	80005ae <main+0x2a>
-			setTimer1(5);
- 80005b6:	2005      	movs	r0, #5
+			setTimer1(time);
+ 80005b6:	2032      	movs	r0, #50	; 0x32
  80005b8:	f000 f90e 	bl	80007d8 <setTimer1>
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
  80005bc:	2120      	movs	r1, #32
@@ -1102,16 +1102,25 @@ __STATIC_FORCEINLINE void __disable_irq(void)
 	...
 
 080007d8 <setTimer1>:
+#include "software_timer.h"
+
+int timer1_counter = 0;
+int timer1_flag = 0;
+
+void setTimer1(int duration){
  80007d8:	b480      	push	{r7}
  80007da:	b083      	sub	sp, #12
  80007dc:	af00      	add	r7, sp, #0
  80007de:	6078      	str	r0, [r7, #4]
+	timer1_counter = duration;
  80007e0:	4a05      	ldr	r2, [pc, #20]	; (80007f8 <setTimer1+0x20>)
  80007e2:	687b      	ldr	r3, [r7, #4]
  80007e4:	6013      	str	r3, [r2, #0]
+	timer1_flag = 0;
  80007e6:	4b05      	ldr	r3, [pc, #20]	; (80007fc <setTimer1+0x24>)
  80007e8:	2200      	movs	r2, #0
  80007ea:	601a      	str	r2, [r3, #0]
+}
  80007ec:	bf00      	nop
  80007ee:	370c      	adds	r7, #12
  80007f0:	46bd      	mov	sp, r7
@@ -1122,24 +1131,32 @@ __STATIC_FORCEINLINE void __disable_irq(void)
  80007fc:	2000003c 	.word	0x2000003c
 
 08000800 <timerRun>:
+void timerRun(){
  8000800:	b480      	push	{r7}
  8000802:	af00      	add	r7, sp, #0
+	if(timer1_counter > 0){
  8000804:	4b09      	ldr	r3, [pc, #36]	; (800082c <timerRun+0x2c>)
  8000806:	681b      	ldr	r3, [r3, #0]
  8000808:	2b00      	cmp	r3, #0
  800080a:	dd0b      	ble.n	8000824 <timerRun+0x24>
+		timer1_counter--;
  800080c:	4b07      	ldr	r3, [pc, #28]	; (800082c <timerRun+0x2c>)
  800080e:	681b      	ldr	r3, [r3, #0]
  8000810:	3b01      	subs	r3, #1
  8000812:	4a06      	ldr	r2, [pc, #24]	; (800082c <timerRun+0x2c>)
  8000814:	6013      	str	r3, [r2, #0]
+		if(timer1_counter <= 0){
  8000816:	4b05      	ldr	r3, [pc, #20]	; (800082c <timerRun+0x2c>)
  8000818:	681b      	ldr	r3, [r3, #0]
  800081a:	2b00      	cmp	r3, #0
  800081c:	dc02      	bgt.n	8000824 <timerRun+0x24>
+			timer1_flag = 1;
  800081e:	4b04      	ldr	r3, [pc, #16]	; (8000830 <timerRun+0x30>)
  8000820:	2201      	movs	r2, #1
  8000822:	601a      	str	r2, [r3, #0]
+		}
+	}
+}
  8000824:	bf00      	nop
  8000826:	46bd      	mov	sp, r7
  8000828:	bc80      	pop	{r7}
@@ -1471,44 +1488,98 @@ void SystemInit (void)
  800094e:	4770      	bx	lr
 
 08000950 <Reset_Handler>:
+  .weak Reset_Handler
+  .type Reset_Handler, %function
+Reset_Handler:
+
+/* Call the clock system initialization function.*/
+    bl  SystemInit
  8000950:	f7ff fff8 	bl	8000944 <SystemInit>
+
+/* Copy the data segment initializers from flash to SRAM */
+  ldr r0, =_sdata
  8000954:	480b      	ldr	r0, [pc, #44]	; (8000984 <LoopFillZerobss+0xe>)
+  ldr r1, =_edata
  8000956:	490c      	ldr	r1, [pc, #48]	; (8000988 <LoopFillZerobss+0x12>)
+  ldr r2, =_sidata
  8000958:	4a0c      	ldr	r2, [pc, #48]	; (800098c <LoopFillZerobss+0x16>)
+  movs r3, #0
  800095a:	2300      	movs	r3, #0
+  b LoopCopyDataInit
  800095c:	e002      	b.n	8000964 <LoopCopyDataInit>
 
 0800095e <CopyDataInit>:
+
+CopyDataInit:
+  ldr r4, [r2, r3]
  800095e:	58d4      	ldr	r4, [r2, r3]
+  str r4, [r0, r3]
  8000960:	50c4      	str	r4, [r0, r3]
+  adds r3, r3, #4
  8000962:	3304      	adds	r3, #4
 
 08000964 <LoopCopyDataInit>:
+
+LoopCopyDataInit:
+  adds r4, r0, r3
  8000964:	18c4      	adds	r4, r0, r3
+  cmp r4, r1
  8000966:	428c      	cmp	r4, r1
+  bcc CopyDataInit
  8000968:	d3f9      	bcc.n	800095e <CopyDataInit>
+  
+/* Zero fill the bss segment. */
+  ldr r2, =_sbss
  800096a:	4a09      	ldr	r2, [pc, #36]	; (8000990 <LoopFillZerobss+0x1a>)
+  ldr r4, =_ebss
  800096c:	4c09      	ldr	r4, [pc, #36]	; (8000994 <LoopFillZerobss+0x1e>)
+  movs r3, #0
  800096e:	2300      	movs	r3, #0
+  b LoopFillZerobss
  8000970:	e001      	b.n	8000976 <LoopFillZerobss>
 
 08000972 <FillZerobss>:
+
+FillZerobss:
+  str  r3, [r2]
  8000972:	6013      	str	r3, [r2, #0]
+  adds r2, r2, #4
  8000974:	3204      	adds	r2, #4
 
 08000976 <LoopFillZerobss>:
+
+LoopFillZerobss:
+  cmp r2, r4
  8000976:	42a2      	cmp	r2, r4
+  bcc FillZerobss
  8000978:	d3fb      	bcc.n	8000972 <FillZerobss>
+
+/* Call static constructors */
+    bl __libc_init_array
  800097a:	f001 faef 	bl	8001f5c <__libc_init_array>
+/* Call the application's entry point.*/
+  bl main
  800097e:	f7ff fe01 	bl	8000584 <main>
+  bx lr
  8000982:	4770      	bx	lr
+  ldr r0, =_sdata
  8000984:	20000000 	.word	0x20000000
+  ldr r1, =_edata
  8000988:	2000001c 	.word	0x2000001c
+  ldr r2, =_sidata
  800098c:	08001ff8 	.word	0x08001ff8
+  ldr r2, =_sbss
  8000990:	2000001c 	.word	0x2000001c
+  ldr r4, =_ebss
  8000994:	2000008c 	.word	0x2000008c
 
 08000998 <ADC1_2_IRQHandler>:
+ * @retval : None
+*/
+    .section .text.Default_Handler,"ax",%progbits
+Default_Handler:
+Infinite_Loop:
+  b Infinite_Loop
  8000998:	e7fe      	b.n	8000998 <ADC1_2_IRQHandler>
 	...
 

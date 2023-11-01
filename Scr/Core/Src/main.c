@@ -27,7 +27,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define time 25
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -226,10 +226,10 @@ int main(void) {
 	int hour = 15, minute = 8, second = 50;
 	updateClockBuffer(minute, second);
 	int cntsec = 4;
-	setTimer1(25);
+	setTimer1(time);
 	while (1) {
 		if (timer1_flag) {
-			setTimer1(25);
+			setTimer1(time);
 			if (cntsec <= 0) {
 				second++;
 				if (second >= 60) {

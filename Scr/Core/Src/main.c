@@ -27,7 +27,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#define time 50
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -180,10 +180,10 @@ int main(void)
 	//int number = 1;
 	int en = 4;
 	int cntdot = 2;
-	setTimer1(50);
+	setTimer1(time);
 	while (1) {
 		if (timer1_flag) {
-			setTimer1(50);
+			setTimer1(time);
 			HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 			if(cntdot <= 0){
 				HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
